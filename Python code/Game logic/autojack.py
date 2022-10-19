@@ -2,6 +2,14 @@ import random
 
 def main():
     deck = ["2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14"]
+    #Initiate hand arrays
+    dealerhand = []
+    player1hand = []
+    player2hand = []
+    player3hand = []
+    player4hand = []
+    players = [player1hand, player2hand, player3hand, player4hand, dealerhand]
+    rounds = 1
 
     def draw_card():
        draw = random.choice(deck)
@@ -80,7 +88,7 @@ def main():
         else:
             return
 
-    def scorecompare(playerID,playerHand):
+    def scorecompare(playerID, playerHand):
         if(handVal(playerHand) > handVal(players[4])):
             print("Player ",playerID , "has a score of ", handVal(playerHand)," and beat the dealer"))
         elif (handVal(playerHand) == handVal(players[4])):
@@ -88,14 +96,7 @@ def main():
         else:
             print("Dealer beat player ", playerID)
 
-    #Initiate hand arrays
-    dealerhand = []
-    player1hand = []
-    player2hand = []
-    player3hand = []
-    player4hand = []
-    players = [player1hand, player2hand, player3hand, player4hand, dealerhand]
-    rounds = 1
+
 
     for x in range(rounds):
         for y in range(len(players)):
