@@ -90,7 +90,7 @@ def main():
 
     def scorecompare(playerID, playerHand):
         if(handVal(playerHand) > handVal(players[4])):
-            print("Player ",playerID , "has a score of ", handVal(playerHand)," and beat the dealer"))
+            print("Player ",playerID , "has a score of ", handVal(playerHand)," and beat the dealer")
         elif (handVal(playerHand) == handVal(players[4])):
             print("Player ",playerID ," drew")
         else:
