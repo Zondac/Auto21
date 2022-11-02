@@ -4,30 +4,40 @@ from CapPic import CapImg
 from scipy.spatial import distance
 import os
 
+
+directory = "maskImg"
+maskImgList = []
+nameList = []
+pictureFolder = os.listdir(directory)
+
+for picture in pictureFolder:
+    imgCur = cv2.imread(f"{directory}/{picture}", cv2.IMREAD_UNCHANGED)
+    maskImgList.append(imgCur)
+    nameList.append(os.path.splitext(picture)[0])
+
 def drawCard():
-    directory = "maskImg"
-    maskImgList = []
-    nameList = []
-    pictureFolder = os.listdir(directory)
+   
+    global drawCardCount
 
-    for picture in pictureFolder:
-        imgCur = cv2.imread(f"{directory}/{picture}", cv2.IMREAD_UNCHANGED)
-        maskImgList.append(imgCur)
-        nameList.append(os.path.splitext(picture)[0])
-
-    # captures image fro picamera feed and returns image, can add resolution as parameter
-    #xxx = 1500
-    #yyy = 1000
-    #resolution = (xxx,yyy)
-    #imageCenter = (xxx/2,yyy/2)
-    resolution = (3008,2000)
-    imageCenter = (1200,800)
+    if drawCardCount < 15:
+        imageCenter = (2100,1000)
+    elif drawCardCount  < 30:
+        imageCenter = (2000,1000)
+    elif drawCardCount  < 45:
+        imageCenter = (1900,1000)
+    elif drawCardCount  < 60:
+        imageCenter = (1800,1000)
+    else:
+        imageCenter = (1800,1200)
+     # captures image fro picamera feed and returns image, can add resolution as parameter
+    resolution = (3008,2000)    
     img = CapImg(resolution)
-    #img = cv2.blur(img, (10,10))
-    #img = cv2.imread('card44.jpg')
+
     imageSize = resolution
     img = cv2.resize(img, imageSize)
+    
     # turning picture to black and white
+    
     img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
     img = cv2.cvtColor(img, cv2.COLOR_GRAY2BGR)
 
@@ -45,7 +55,7 @@ def drawCard():
     smooth = np.ones((4,4),np.uint8)
     mask = cv2.morphologyEx(mask, cv2.MORPH_CLOSE, smooth)
     mask = cv2.morphologyEx(mask, cv2.MORPH_OPEN, smooth)
-    cv2.imshow("mask",mask)
+
     # Find contours from the mask image, contours around the white in image
     contours, hierarchy = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
 
@@ -76,8 +86,6 @@ def drawCard():
     # Uses nr from for loop to only draw contour closest to imageCenter
     output = cv2.drawContours(img, contours[nr], -1, (0, 0, 255), 3)
 
-    # Showing the image with contour
-    cv2.imshow("Output", output)
 
 
     x, y, w, h = cv2.boundingRect(contours[nr])
@@ -100,7 +108,11 @@ def drawCard():
             bestRankDiff = rankDiff
             bestRankName = nameList[index]
         index+= 1
-    
+    cv2.imshow("rect4", img)
+
+    drawCardCount += 1
     return bestRankName
 
 
+print(drawCard())
+print(drawCardCount)
