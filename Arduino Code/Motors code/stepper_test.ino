@@ -15,15 +15,16 @@ const int fortyPerRevolution = 236;
 #define IN3 7
 #define IN4 6
 
+
 // DC motor
 int ena = 10;
 int in1 = 11;
 int in2 = 12;
 
-
+int delaytime = 500;
 // Creates an instance of stepper class
 // Pins entered in sequence IN1-IN3-IN2-IN4 for proper step sequence
-Stepper myStepper = Stepper(stepsPerRevolution, IN1, IN2, IN3, IN4);
+Stepper myStepper = Stepper(stepsPerRevolution, IN1, IN2);
 
 void setup() {
 // python communication
@@ -66,7 +67,7 @@ void loop(){
 void PlayerOneTurn() {
   myStepper.setSpeed(6);
   myStepper.step(twentyPerRevolution);
-  delay(500);
+  delay(delaytime);
   DcMotor();
 }
 
@@ -74,14 +75,14 @@ void PlayerOneTurn() {
 void PlayerTwoTurn() {
   myStepper.setSpeed(6);
   myStepper.step(fortyPerRevolution);
-  delay(500);
+  delay(delaytime);
   DcMotor();
 }
 
 void DealerTurn(){
   myStepper.setSpeed(6);
   myStepper.step(twentyPerRevolution);
-  delay(500);
+  delay(delaytime);
   DcMotor();
   
 }
@@ -90,7 +91,7 @@ void DealerTurn(){
 void PlayerThreeTurn() {
   myStepper.setSpeed(6);
   myStepper.step(twentyPerRevolution);
-  delay(500);
+  delay(delaytime);
   DcMotor();
 }
 
@@ -98,7 +99,7 @@ void PlayerThreeTurn() {
 void PlayerFourTurn() {
   myStepper.setSpeed(6);
   myStepper.step(fortyPerRevolution);
-  delay(500);
+  delay(delaytime);
   DcMotor();
 }
 
@@ -128,14 +129,14 @@ void DcMotor() {
    //CLOCKWISE MAX SPEED
   digitalWrite(in1,HIGH);
   digitalWrite(in2,LOW);
-  analogWrite(ena, 255);
+  digitalWrite(ena, HIGH);
   delay(95);
    digitalWrite(in1,LOW);
   digitalWrite(in2,LOW);
   delay(20);
   digitalWrite(in1,LOW);
   digitalWrite(in2,HIGH);
-  analogWrite(ena, 255);
+  digitalWrite(ena, HIGH);
   delay(50);
   //STOP
   digitalWrite(in1,LOW);

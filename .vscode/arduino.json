@@ -1,0 +1,6 @@
+{
+    "board": "arduino:avr:uno",
+    "sketch": "Arduino Code\\Motors code\\stepper_test.ino",
+    "port": "COM8",
+    "programmer": "arduino:arduinoisp"
+}
