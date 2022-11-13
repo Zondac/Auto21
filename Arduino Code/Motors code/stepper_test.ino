@@ -6,8 +6,8 @@ int x;
 // Stepper settings
 // Defines the number of steps per rotation
 const int stepsPerRevolution = 1892; //473 steps for 10 v for 1/4 circle
-const int twentyPerRevolution = 118;
-const int fortyPerRevolution = 236;
+const int twentyPerRevolution = 480;
+const int fortyPerRevolution = twentyPerRevolution*2;
 
 
 #define IN1 9
@@ -21,7 +21,10 @@ int ena = 10;
 int in1 = 11;
 int in2 = 12;
 
-int delaytime = 500;
+
+int speed1 = 15;
+int speed2 = 25;
+int delaytime = 250;
 // Creates an instance of stepper class
 // Pins entered in sequence IN1-IN3-IN2-IN4 for proper step sequence
 Stepper myStepper = Stepper(stepsPerRevolution, IN1, IN2);
@@ -65,22 +68,22 @@ void loop(){
 
 
 void PlayerOneTurn() {
-  myStepper.setSpeed(6);
-  myStepper.step(twentyPerRevolution);
+  myStepper.setSpeed(speed1);
+  myStepper.step(fortyPerRevolution);
   delay(delaytime);
   DcMotor();
 }
 
 
 void PlayerTwoTurn() {
-  myStepper.setSpeed(6);
-  myStepper.step(fortyPerRevolution);
+  myStepper.setSpeed(speed1);
+  myStepper.step(twentyPerRevolution);
   delay(delaytime);
   DcMotor();
 }
 
 void DealerTurn(){
-  myStepper.setSpeed(6);
+  myStepper.setSpeed(speed1);
   myStepper.step(twentyPerRevolution);
   delay(delaytime);
   DcMotor();
@@ -89,7 +92,7 @@ void DealerTurn(){
 
 
 void PlayerThreeTurn() {
-  myStepper.setSpeed(6);
+  myStepper.setSpeed(speed1);
   myStepper.step(twentyPerRevolution);
   delay(delaytime);
   DcMotor();
@@ -97,28 +100,28 @@ void PlayerThreeTurn() {
 
 
 void PlayerFourTurn() {
-  myStepper.setSpeed(6);
-  myStepper.step(fortyPerRevolution);
+  myStepper.setSpeed(speed1);
+  myStepper.step(twentyPerRevolution);
   delay(delaytime);
   DcMotor();
 }
 
 
 void ResetStartPosition_one(){
-  myStepper.setSpeed(8);
-  myStepper.step(-354);
+  myStepper.setSpeed(speed2);
+  myStepper.step(-fortyPerRevolution-twentyPerRevolution);
 }
 void ResetStartPosition_two(){
-  myStepper.setSpeed(8);
-  myStepper.step(-473);
+  myStepper.setSpeed(speed2);
+  myStepper.step(-fortyPerRevolution-(twentyPerRevolution*2));
 }
 void ResetStartPosition_three(){
-  myStepper.setSpeed(8);
-  myStepper.step(-591);
+  myStepper.setSpeed(speed2);
+  myStepper.step(-fortyPerRevolution-(3*twentyPerRevolution));
 }
 void ResetStartPosition_four(){
-  myStepper.setSpeed(8);
-  myStepper.step(-828);
+  myStepper.setSpeed(speed2);
+  myStepper.step(-fortyPerRevolution-(4*twentyPerRevolution));
 }
 
 
