@@ -18,13 +18,10 @@ int locationarray[5]  {twentyPerRevolution, twentyPerRevolution*3,twentyPerRevol
 #define IN3 7
 #define IN4 6
 
-
-
 // DC motor
 int ena = 10;
 int in1 = 11;
 int in2 = 12;
-
 
 //Numeric variables
 int speed1 = 15;
@@ -81,25 +78,19 @@ void DcMotor() {
   delay(50);
 }
 
-
-void InputProcessing(){
+void initialDeal(int playeramount){
+  for (size_t i = 0; i < 2; i++)
+  {
   
-  
-if (x == 1){
-  MoveToPlayer(twentyPerRevolution);
-  while(!Serial.available());
-  MoveToPlayer(fortyPerRevolution);
-  while(!Serial.available());
-  MoveToPlayer(-fortyPerRevolution);
-  while(!Serial.available());
-  MoveToPlayer(fortyPerRevolution);
-  while(!Serial.available());
+  for (size_t i = 1; i < playeramount; i++)
+    {
+      MoveToPlayer(i);
+      while(!Serial.available());
+      DcMotor();
+    }
+  }
 }
-if (x == 2){
-  MoveToPlayer(twentyPerRevolution);
 
-}
-if (x == 3){
-}
-if (x == 4){
+void InputProcessing(){  
+  initialDeal(x+1);
 }
