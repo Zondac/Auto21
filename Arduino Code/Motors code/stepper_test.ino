@@ -43,13 +43,11 @@ pinMode(in1, OUTPUT);
 pinMode(in2, OUTPUT);
 }
 
-
 void loop(){
 //   python communication 
  while (!Serial.available());
  x = Serial.readString().toInt();
- Serial.print(x);
- InputProcessing();
+ initialDeal(x+1);
 }
 
 void  MoveToPlayer(int player) {
@@ -89,8 +87,4 @@ void initialDeal(int playeramount){
       DcMotor();
     }
   }
-}
-
-void InputProcessing(){  
-  initialDeal(x+1);
 }
