@@ -14,6 +14,7 @@ def main():
     def draw_card():
        draw = random.choice(deck)
        return draw
+       
     def handVal(player_hand):
         player_hand.sort()
         valSum = 0

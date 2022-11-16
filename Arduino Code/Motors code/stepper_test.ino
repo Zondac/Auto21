@@ -1,7 +1,9 @@
 //Includes the Arduino Stepper Library
 #include <Stepper.h>
+#include <Wire.h> 
+#include <LiquidCrystal_I2C.h>
 
-int x;
+int inputint;
 // Stepper settings
 // Defines the number of steps per rotation
 const int stepsPerRevolution = 1892; //473 steps for 10 v for 1/4 circle
@@ -15,6 +17,25 @@ int locationarray[5]  {twentyPerRevolution, twentyPerRevolution*3,twentyPerRevol
 #define IN2 8
 #define IN3 7
 #define IN4 6
+
+
+LiquidCrystal_I2C lcd[4]={
+  LiquidCrystal_I2C(0x27,16,2),
+  LiquidCrystal_I2C(0x26,16,2),
+  LiquidCrystal_I2C(0x25,16,2),
+  LiquidCrystal_I2C(0x3F,16,2)
+};
+
+String inputBuffer;
+
+
+int btns[12];
+for (int declarepin = 22; declarepin <= 34; declarepin++)
+{
+  btns[declarepin-22] = declarepin;
+}
+
+int btnsprev[12] = btns;
 
 // DC motor
 int ena = 10;
@@ -39,14 +60,28 @@ void setup() {
 pinMode(ena, OUTPUT);
 pinMode(in1, OUTPUT);
 pinMode(in2, OUTPUT);
+
+for (int i = 0; i<4; i++){
+  lcd[i].begin();
+  lcd[i].backlight();
+  lcd[i].clear();
+  lcd[i].setCursor(0,0);
+  lcd[i].print("Chips:");
+  lcd[i].setCursor(0,1);
+  lcd[i].noCursor();
+}
+for (size_t i = 22; i <= 34; i++)
+{
+  pinMode(i,INPUT_PULLUP);
+}
 }
 
 void loop(){
 //   python communication 
  while (!Serial.available());
- x = Serial.readString().toInt();
+ inputint = Serial.readString().toInt();
  
- initialDeal(x+1);
+ initialDeal(inputint+1);
 
  myStepper.step(-currentLocation);
  currentLocation = 0;

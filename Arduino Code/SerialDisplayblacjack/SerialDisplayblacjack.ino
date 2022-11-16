@@ -1,11 +1,14 @@
 /**
  * Displays text sent over the serial port (e.g. from the Serial Monitor) on
  * an attached LCD.
- *//*
+ */
+
+
 #include <Wire.h> 
 #include <LiquidCrystal_I2C.h>
 
 // Set the LCD address to 0x27 for a 16 chars and 2 line display
+
 
 LiquidCrystal_I2C lcd[4]={
   LiquidCrystal_I2C(0x27,16,2),
@@ -13,10 +16,16 @@ LiquidCrystal_I2C lcd[4]={
   LiquidCrystal_I2C(0x25,16,2),
   LiquidCrystal_I2C(0x3F,16,2)
 };
+
 String inputBuffer;
-int p1btn1 = 1;
-int p1btn2 = 1;
-int p1btn3 = 1;
+
+
+int btns[12];
+for (int declarepin = 22; declarepin <= 34; declarepin++)
+{
+  btns[declarepin-22] = declarepin;
+}
+
 
 void setup()
 {
@@ -29,11 +38,11 @@ void setup()
     lcd[i].setCursor(0,1);
     lcd[i].noCursor();
   }
-  pinMode(2,INPUT_PULLUP);
-  pinMode(3,INPUT_PULLUP);
-  pinMode(4,INPUT_PULLUP);
-  
-	// Initialize the serial port at a speed of 9600 baud
+  for (size_t i = 22; i <= 34; i++)
+  {
+    pinMode(i,INPUT_PULLUP);
+  }
+  // Initialize the serial port at a speed of 9600 baud
 	Serial.begin(9600);
 }
 
@@ -90,4 +99,3 @@ void loop()
       }
 	}
 }
-*/
