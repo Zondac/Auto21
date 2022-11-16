@@ -1,7 +1,7 @@
 //Includes the Arduino Stepper Library
 #include <Stepper.h>
 #include <Wire.h> 
-#include <LiquidCrystal_I2C.h>
+#include "controllers.h"
 
 int inputint;
 // Stepper settings
@@ -18,15 +18,8 @@ int locationarray[5]  {twentyPerRevolution, twentyPerRevolution*3,twentyPerRevol
 #define IN3 7
 #define IN4 6
 
+int addressArray[4] = {0x27, 0x26, 0x25, 0x3F}
 
-LiquidCrystal_I2C lcd[4]={
-  LiquidCrystal_I2C(0x27,16,2),
-  LiquidCrystal_I2C(0x26,16,2),
-  LiquidCrystal_I2C(0x25,16,2),
-  LiquidCrystal_I2C(0x3F,16,2)
-};
-
-String inputBuffer;
 
 
 int btns[12];

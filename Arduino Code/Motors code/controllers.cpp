@@ -19,6 +19,7 @@ Controller::Controller(int firstPin, int displayAddress) {
 
 }
 
+
 void Controller::setChips(int valChange){
     chips += valChange;
     lcd.print(chips);
