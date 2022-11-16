@@ -10,6 +10,8 @@ const int twentyPerRevolution = 480;
 const int fortyPerRevolution = twentyPerRevolution*2;
 int currentLocation = 0;
 
+int locationarray[5]  {twentyPerRevolution, twentyPerRevolution*3,twentyPerRevolution*4,twentyPerRevolution*6,twentyPerRevolution*8};
+
 //Stepper motor
 #define IN1 9
 #define IN2 8
@@ -53,12 +55,10 @@ void loop(){
  InputProcessing();
 }
 
-
-void  MoveToPlayer(int revs) {
+void  MoveToPlayer(int player) {
   myStepper.setSpeed(speed1);
-  myStepper.step(revs);
-  currentlocation += revs;
-  delay(delaytime);
+  myStepper.step(locationarray[player-1]-currentLocation);
+  currentLocation += locationarray[player-1];
 }
 
 void DcMotor() {
@@ -87,35 +87,19 @@ void InputProcessing(){
   
 if (x == 1){
   MoveToPlayer(twentyPerRevolution);
-  while(!Serial.available()){}
+  while(!Serial.available());
   MoveToPlayer(fortyPerRevolution);
-  while(!Serial.available()){}
+  while(!Serial.available());
   MoveToPlayer(-fortyPerRevolution);
-  while(!Serial.available()){}
+  while(!Serial.available());
   MoveToPlayer(fortyPerRevolution);
-  while(!Serial.available()){}
-  }
-
+  while(!Serial.available());
 }
 if (x == 2){
-  PlayerOneTurn();
-  PlayerTwoTurn();
-  DealerTurn();
-  ResetStartPosition_two();
+  MoveToPlayer(twentyPerRevolution);
+
 }
 if (x == 3){
-  PlayerOneTurn();
-  PlayerTwoTurn();
-  DealerTurn();
-  PlayerThreeTurn();
-  ResetStartPosition_three();
 }
 if (x == 4){
-  PlayerOneTurn();
-  PlayerTwoTurn();
-  DealerTurn();
-  PlayerThreeTurn();
-  PlayerFourTurn();
-  ResetStartPosition_four();
-}
 }
