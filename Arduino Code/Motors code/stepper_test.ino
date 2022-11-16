@@ -23,7 +23,7 @@ int in2 = 12;
 
 //Numeric variables
 int speed1 = 15;
-int speed2 = 25;
+int speed2 = 30;
 int delaytime = 250;
 
 // Creates an instance of stepper class
