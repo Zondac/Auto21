@@ -1,7 +1,7 @@
-//Includes the Arduino Stepper Library
 #include <Stepper.h>
 #include <Wire.h> 
 #include "controllers.h"
+#include <LiquidCrystal_I2C.h>
 
 int inputint;
 // Stepper settings
@@ -12,23 +12,24 @@ int currentLocation = 0;
 
 int locationarray[5]  {twentyPerRevolution, twentyPerRevolution*3,twentyPerRevolution*4,twentyPerRevolution*5,twentyPerRevolution*7};
 
+Controller player1(22);
+Controller player2(25);
+Controller player3(28);
+Controller player4(31);
+
+LiquidCrystal_I2C lcd[4]={
+  LiquidCrystal_I2C(0x27,16,2),
+  LiquidCrystal_I2C(0x26,16,2),
+  LiquidCrystal_I2C(0x25,16,2),
+  LiquidCrystal_I2C(0x3F,16,2)
+};
+
+
 //Stepper motor
 #define IN1 9
 #define IN2 8
 #define IN3 7
 #define IN4 6
-
-int addressArray[4] = {0x27, 0x26, 0x25, 0x3F}
-
-
-
-int btns[12];
-for (int declarepin = 22; declarepin <= 34; declarepin++)
-{
-  btns[declarepin-22] = declarepin;
-}
-
-int btnsprev[12] = btns;
 
 // DC motor
 int ena = 10;
@@ -45,39 +46,41 @@ int delaytime = 250;
 Stepper myStepper = Stepper(stepsPerRevolution, IN1, IN2);
 
 void setup() {
-// python communication
+  // python communication
   Serial.begin(115200);
   Serial.setTimeout(1);
   
   // Dc MOTOR
-pinMode(ena, OUTPUT);
-pinMode(in1, OUTPUT);
-pinMode(in2, OUTPUT);
+  pinMode(ena, OUTPUT);
+  pinMode(in1, OUTPUT);
+  pinMode(in2, OUTPUT);
 
-for (int i = 0; i<4; i++){
-  lcd[i].begin();
-  lcd[i].backlight();
-  lcd[i].clear();
-  lcd[i].setCursor(0,0);
-  lcd[i].print("Chips:");
-  lcd[i].setCursor(0,1);
-  lcd[i].noCursor();
+
+  for (int i = 0; i<4; i++)
+  {
+    lcd[i].begin(16,2);
+    lcd[i].backlight();
+    lcd[i].clear();
+    lcd[i].setCursor(0,0);
+    lcd[i].print("Chips:");
+    lcd[i].setCursor(0,1);
+    lcd[i].noCursor();
+  }
+
 }
-for (size_t i = 22; i <= 34; i++)
+
+void loop()
 {
-  pinMode(i,INPUT_PULLUP);
-}
-}
 
-void loop(){
-//   python communication 
- while (!Serial.available());
- inputint = Serial.readString().toInt();
- 
- initialDeal(inputint+1);
-
- myStepper.step(-currentLocation);
- currentLocation = 0;
+  while (!Serial.available());
+  inputint = Serial.readString().toInt();
+  
+  initialDeal(inputint+1);
+  Serial.read();
+  while(!digitalRead(22) || !digitalRead(23) || !digitalRead(24));
+  player1.getPlayerInput() 
+  myStepper.step(-currentLocation);
+  currentLocation = 0;
 }
 
 
@@ -120,4 +123,3 @@ void initialDeal(int playeramount){
     }
   }
 }
-
