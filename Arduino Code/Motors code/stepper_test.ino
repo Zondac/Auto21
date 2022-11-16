@@ -2,15 +2,13 @@
 #include <Stepper.h>
 
 int x;
-
 // Stepper settings
 // Defines the number of steps per rotation
 const int stepsPerRevolution = 1892; //473 steps for 10 v for 1/4 circle
 const int twentyPerRevolution = 480;
-const int fortyPerRevolution = twentyPerRevolution*2;
 int currentLocation = 0;
 
-int locationarray[5]  {twentyPerRevolution, twentyPerRevolution*3,twentyPerRevolution*4,twentyPerRevolution*6,twentyPerRevolution*8};
+int locationarray[5]  {twentyPerRevolution, twentyPerRevolution*3,twentyPerRevolution*4,twentyPerRevolution*5,twentyPerRevolution*7};
 
 //Stepper motor
 #define IN1 9
@@ -47,13 +45,18 @@ void loop(){
 //   python communication 
  while (!Serial.available());
  x = Serial.readString().toInt();
+ 
  initialDeal(x+1);
+
+ myStepper.step(-currentLocation);
+ currentLocation = 0;
 }
+
 
 void  MoveToPlayer(int player) {
   myStepper.setSpeed(speed1);
   myStepper.step(locationarray[player-1]-currentLocation);
-  currentLocation += locationarray[player-1];
+  currentLocation = locationarray[player-1];
 }
 
 void DcMotor() {
@@ -77,14 +80,16 @@ void DcMotor() {
 }
 
 void initialDeal(int playeramount){
-  for (size_t i = 0; i < 2; i++)
+  for (size_t y = 0; y < 2; y++)
   {
   
-  for (size_t i = 1; i < playeramount; i++)
+  for (size_t i = 1; i <= playeramount; i++)
     {
       MoveToPlayer(i);
       while(!Serial.available());
+      Serial.read();
       DcMotor();
     }
   }
 }
+
