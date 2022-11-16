@@ -15,6 +15,7 @@ class Controller{
         int _scl;
         int _sda;
         int chips;
+
 };
 // code goes here
 #endif
