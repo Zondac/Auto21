@@ -23,7 +23,7 @@ LiquidCrystal_I2C lcd[4]={
   LiquidCrystal_I2C(0x25,16,2),
   LiquidCrystal_I2C(0x3F,16,2)
 };
-
+|
 
 //Stepper motor
 #define IN1 9
@@ -72,13 +72,12 @@ void setup() {
 void loop()
 {
 
-  while (!Serial.available());
-  inputint = Serial.readString().toInt();
-  
+  while (!Serial.available())
+  String inputraw = Serial.readString();
   initialDeal(inputint+1);
   Serial.read();
-  while(!digitalRead(22) || !digitalRead(23) || !digitalRead(24));
-  player1.getPlayerInput() 
+  Serial.print(player1.getPlayerInput());
+
   myStepper.step(-currentLocation);
   currentLocation = 0;
 }

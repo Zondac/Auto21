@@ -12,9 +12,20 @@ Controller::Controller(int firstPin) {
 
 };
 
-int getPlayerInput(){
-    int Apress = digitalRead(A_btnpin);
-    int Bpress = digitalRead(B_btnpin);
-    int Cpress = digitalRead(C_btnpin);
-    return (Apress + Bpress*10 + Cpress*100);
+char getPlayerInput(){
+    bool finished = false;
+    while (!finished){
+        if(digitalRead(A_btnpin)){
+            return ('a');
+        }
+        else if (digitalRead(B_btnpin))
+        {
+            return ('b');
+        }
+        else if (digitalRead(C_btnpin))
+        {
+            return('c');
+        }
+    }
+
 }
