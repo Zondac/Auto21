@@ -28,7 +28,6 @@ def drawCard(drawCardCount, nameList, maskImgList):
     img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
     img = cv2.cvtColor(img, cv2.COLOR_GRAY2BGR)
 
-
     # Turns picture to HSV color code.
     hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
 
