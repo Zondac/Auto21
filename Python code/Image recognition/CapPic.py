@@ -2,9 +2,10 @@ from picamera import PiCamera
 from picamera.array import PiRGBArray
 import time
 
+cam = PiCamera()
+
 def CapImg(resolution=(1280,960)):
     # get picamrea object
-    cam = PiCamera()
     # set resolution
     cam.resolution = resolution
     # Get a "pointer" to the raw feed of the camera, better quality than saving first.
@@ -17,4 +18,3 @@ def CapImg(resolution=(1280,960)):
     img = RawFeed.array
     # return image
     return img
-
