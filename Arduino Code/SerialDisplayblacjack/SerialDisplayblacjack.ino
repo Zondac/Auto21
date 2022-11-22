@@ -68,33 +68,7 @@ void loop()
 		while (Serial.available() > 0) {
       inputBuffer = Serial.readString();
       }
-      switch (inputBuffer[0]){
-        case 'q':
-        
-        
-          inputBuffer.remove(0,1);
-          lcd[0].print("                ");
-          lcd[0].setCursor(0,1);
-          lcd[0].print(inputBuffer);
-        break;
-        
-        case 'w':
-        
-        inputBuffer.remove(0,1);
-          lcd[1].print(inputBuffer);
-        break;
-        
-        case 'e':
-        
-        inputBuffer.remove(0,1);
-          lcd[2].print(inputBuffer);
-        break;
-        
-        case 'r':
-        
-        inputBuffer.remove(0,1);
-          lcd[3].print(inputBuffer);
-        break;
+      
       }
 	}
 }
