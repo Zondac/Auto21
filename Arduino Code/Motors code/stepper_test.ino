@@ -162,9 +162,11 @@ void initialDeal(int playeramount){
 }
 
 
-void setScore(LiquidCrystal_I2C screen, int score){
-    screen.print(score);
-    screen.setCursor(0,1);
+void setScore(LiquidCrystal_I2C screen, int score){          
+  screen.print("                ");
+  screen.setCursor(0,1);
+  screen.print(inputBuffer);
+  screen.setCursor(0,1);
 }
 
 void resetLocation(){
