@@ -6,6 +6,7 @@
 int inputint;
 String inputraw;
 char output;
+bool readysignal;
 // Stepper settings
 // Defines the number of steps per rotation
 const int stepsPerRevolution = 1892; //473 steps for 10 v for 1/4 circle
@@ -77,16 +78,12 @@ void setup() {
 void loop()
 {
   //Initial Deal
-  while (!Serial.available());
-  inputraw = Serial.readString();
-  inputint = inputraw.toInt();
-  initialDeal(inputint+1);
-  Serial.read();
+  blackjackBegin();
 
-  bool readysignal = false; 
+  readysignal = false; 
   //Players start choosing
   while(!readysignal){
-  while(!Serial.availble());
+  while(!Serial.available());
   inputraw = Serial.readString();
   inputint = inputraw.toInt();
   char inputchar = inputraw.charAt(0);
@@ -105,12 +102,16 @@ void loop()
   case 'g':
     output = player4.getPlayerInput();
     break;
+  case 'p':
+    DcMotor();
+    break;
   case 'h':
-  readysignal = !readysignal;
+    readysignal = !readysignal;
     break;
   default:
     break;
   }
+
   Serial.write(output);
   }
 
@@ -167,4 +168,13 @@ void setScore(LiquidCrystal_I2C screen, int score){
 void resetLocation(){
   myStepper.step(-currentLocation);
   currentLocation = 0;
+}
+
+void blackjackBegin(){
+  
+  while (!Serial.available());
+  inputraw = Serial.readString();
+  inputint = inputraw.toInt();
+  initialDeal(i+nputint1);
+  Serial.read();
 }
