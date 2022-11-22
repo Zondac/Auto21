@@ -5,6 +5,7 @@
 
 int inputint;
 String inputraw;
+char output;
 // Stepper settings
 // Defines the number of steps per rotation
 const int stepsPerRevolution = 1892; //473 steps for 10 v for 1/4 circle
@@ -82,30 +83,37 @@ void loop()
   initialDeal(inputint+1);
   Serial.read();
 
+  bool readysignal = false; 
   //Players start choosing
+  while(!readysignal){
   while(!Serial.availble());
   inputraw = Serial.readString();
   inputint = inputraw.toInt();
   char inputchar = inputraw.charAt(0);
+  
   switch (inputchar)
   {
   case 'd':
-    player1.getPlayerInput();
+    output = player1.getPlayerInput();
     break;
   case 'e':
-    player2.getPlayerInput();
+    output = player2.getPlayerInput();
     break;
   case 'f':
-    player3.getPlayerInput();
+    output = player3.getPlayerInput();
     break;
   case 'g':
-    player4.getPlayerInput();
+    output = player4.getPlayerInput();
     break;
   case 'h':
-  
+  readysignal = !readysignal;
+    break;
   default:
     break;
   }
+  Serial.write(output);
+  }
+
 resetLocation()
 } 
 
