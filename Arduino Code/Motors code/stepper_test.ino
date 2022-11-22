@@ -26,7 +26,7 @@ LiquidCrystal_I2C lcd[4]={
   LiquidCrystal_I2C(0x25,16,2),
   LiquidCrystal_I2C(0x3F,16,2)
 };
-|
+
 
 //Stepper motor
 #define IN1 9
@@ -81,6 +81,8 @@ void loop()
   blackjackBegin();
 
   readysignal = false; 
+
+
   //Players start choosing
   while(!readysignal){
   while(!Serial.available());
