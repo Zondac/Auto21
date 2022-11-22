@@ -4,21 +4,8 @@ from CapPic import CapImg
 from scipy.spatial import distance
 import os
 
-
-directory = "maskImg"
-maskImgList = []
-nameList = []
-pictureFolder = os.listdir(directory)
-
-for picture in pictureFolder:
-    imgCur = cv2.imread(f"{directory}/{picture}", cv2.IMREAD_UNCHANGED)
-    maskImgList.append(imgCur)
-    nameList.append(os.path.splitext(picture)[0])
-
-def drawCard():
-   
-    global drawCardCount
-
+def drawCard(drawCardCount, nameList, maskImgList):
+    
     if drawCardCount < 15:
         imageCenter = (2100,1000)
     elif drawCardCount  < 30:
@@ -28,7 +15,7 @@ def drawCard():
     elif drawCardCount  < 60:
         imageCenter = (1800,1000)
     else:
-        imageCenter = (1800,1200)
+        imageCenter = (1700,1000)
      # captures image fro picamera feed and returns image, can add resolution as parameter
     resolution = (3008,2000)    
     img = CapImg(resolution)
@@ -86,20 +73,21 @@ def drawCard():
     # Uses nr from for loop to only draw contour closest to imageCenter
     output = cv2.drawContours(img, contours[nr], -1, (0, 0, 255), 3)
 
-
+    
+    # finds square around contour, adding to w to to find a larger square.
 
     x, y, w, h = cv2.boundingRect(contours[nr])
-
+    test = 1.6
+    w=int(int(w)*test)
     rect = cv2.rectangle(img, (x-10,y-10), (x+w+10,y+h+10), (0,255,0), 2)
     cropped = mask[y:y+h,x:x+w]
-    cropped = cv2.resize(cropped,(300,900))
-    cv2.imshow("rect2",cropped)
+    cropped = cv2.resize(cropped,(300,500))
 
     bestRankDiff = 9999999
     index = 0
 
     for item in maskImgList:
-        item = cv2.resize(item,(300,900))
+        item = cv2.resize(item,(300,500))
         diffImg = cv2.absdiff(cropped, item)
         rankDiff = int(np.sum(diffImg)/255)
         
@@ -108,11 +96,6 @@ def drawCard():
             bestRankDiff = rankDiff
             bestRankName = nameList[index]
         index+= 1
-    cv2.imshow("rect4", img)
-
+    cv2.destroyAllWindows()
     drawCardCount += 1
-    return bestRankName
-
-
-print(drawCard())
-print(drawCardCount)
+    return bestRankName, drawCardCount
