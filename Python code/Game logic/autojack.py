@@ -1,116 +1,113 @@
 import random
+import drawCard
+from drawCard import drawCard
 
-def main():
-    deck = ["2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14"]
-    #Initiate hand arrays
-    dealerhand = []
-    player1hand = []
-    player2hand = []
-    player3hand = []
-    player4hand = []
-    players = [player1hand, player2hand, player3hand, player4hand, dealerhand]
-    rounds = 1
-
-    def draw_card():
-       draw = random.choice(deck)
-       return draw
-       
-    def handVal(player_hand):
-        player_hand.sort()
-        valSum = 0
-        for x in range(len(player_hand)):
-            
-            if int(player_hand[x]) == 14:
-                valSum += 11
-                if valSum > 21:
-                    valSum -= 10
-            
-            elif (int(player_hand[x]) > 10):
-                valSum += 10
-            else:
-                valSum += int(player_hand[x])
+def handVal(player_hand):
+    player_hand.sort()
+    valSum = 0
+    for x in range(len(player_hand)):
         
-        if (valSum > 21):
-            #bust case
-            return 0
+        if int(player_hand[x]) == 14:
+            valSum += 11
+            if valSum > 21:
+                valSum -= 10
         
-        return valSum
+        elif (int(player_hand[x]) > 10):
+            valSum += 10
+        else:
+            valSum += int(player_hand[x])
+    
+    if (valSum > 21):
+        #bust case
+        return 0
+    
+    return valSum
 
-    def printHand(playerID, pHand):
-        print("Player ", playerID, " has: ", pHand, " to a total value of: ", handVal(pHand))
+def playerchoice(playerID, playerhand, drawCardCount, deck, MaskImgList):
+    finished = False
+    while (finished == False):
+        if (handVal(playerhand) == 21):
+            print("Blackjack!")
+            finished = True
 
-    def playerchoice(playerID, playerhand):
-        finished = False
-        while (finished == False):
-            printHand(playerID, playerhand)
-            if (handVal(playerhand) == 21):
-                print("Blackjack!")
+        if (finished == False):
+            print(handVal(playerhand))
+            playerInput = input("Player " + playerID + " input: " )
+
+            if playerInput == 'a':
+                print("Hit")
+                cardValue, drawCardCount = drawCard(drawCardCount, deck, MaskImgList)
+                playerhand.append(cardValue)
+                #spytt ut kort : send piss til serial
+
+                if (handVal(playerhand) == 0):
+                    #Update score
+                    print(playerID, " Busted")
+                    finished = True
+                    
+                elif(handVal(playerhand) == 21):
+                    finished = True
+
+            elif playerInput == "b":
+                #Enter bet
+                print(playerID, " Double down")
+                cardValue, drawCardCount = drawCard(drawCardCount, deck, MaskImgList)
+                playerhand.append(cardValue)
+                #Spytt ut kort
                 finished = True
-
-            if (finished == False):
-                pinput = input ("H to hit, S to stand, D to Double Down\n")
-
-                if pinput == "h":
-                    playerhand.append(draw_card()) 
-
-                    if (handVal(playerhand) == 0):
-                        printHand(playerID, playerhand)
-                        print("You busted!")
-
-                        finished = True
-                    elif(handVal(playerhand) == 21):
-                        printHand(playerID, playerhand)
-                        print ("You have blacjack!")
-                        finished = True
-
-                elif pinput == "d":
-                    playerhand.append(draw_card())
-                    printHand(playerID, playerhand)
+                
+                if (handVal(playerhand) == 0):
+                    #Update score
+                    print("Busted")
                     finished = True
-                    if (handVal(playerhand) == 0):
-                        print("You busted!")
-
-                elif pinput == "s":
+                elif (handVal(playerhand) == 21):
                     finished = True
 
-    def play_deck():
-        drawncards = [draw_card(), draw_card()]
-        return drawncards
-
-    def dealerchoice():
-        if (handVal(players[4]) == 0):
-            print("Dealer busted!")
-            return
-
-        elif(handVal(players[4]) < 16):
-            players[4].append(draw_card())
-            dealerchoice()
-
-        else:
-            return
-
-    def scorecompare(playerID, playerHand):
-        if(handVal(playerHand) > handVal(players[4])):
-            print("Player ",playerID , "has a score of ", handVal(playerHand)," and beat the dealer")
-        elif (handVal(playerHand) == handVal(players[4])):
-            print("Player ",playerID ," drew")
-        else:
-            print("Dealer beat player ", playerID)
+            elif playerInput == "c":
+                print("Stand")
+                finished = True
+    return drawCardCount
+        
 
 
+def dealerchoice(dealerhand, drawCardCount, deck, MaskImgList):
+    if (handVal(dealerhand) == 0):
+        print("Dealer busted!")
+        return drawCardCount
 
-    for x in range(rounds):
-        for y in range(len(players)):
-            players[y] = play_deck()
-
-        for y in range(len(players)-1):
-            playerchoice(y+1,players[y])
-
+    elif(handVal(dealerhand) < 16):
+        print("Hit - Dealer")
+        cardvalue, drawCardCount = drawCard(drawCardCount, deck, MaskImgList)
+        dealerhand.append(cardValue)
+        #Spytt ut kort
         dealerchoice()
+        
+    else:
+        print("Dealer stand")
+        print("Dealer hand: ", handVal(dealerhand))
+        return drawCardCount
 
-        printHand("Dealer", players[4])
 
-        for y in range(len(players)-1):
-            scorecompare(y+1,players[y])
+def scorecompare(playerID, playerHand, dealerhand):
+    if(handVal(playerHand) > handVal(dealerhand)):
+        print("Player ",playerID , "has a score of ", handVal(playerHand)," and beat the dealer")
+    elif (handVal(playerHand) == handVal(dealerhand)):
+        print("Player ",playerID ," drew")
+    else:
+        print("Dealer beat player ", playerID)
 
-main()
+
+
+#     for x in range(rounds):
+#         for y in range(len(players)):
+#             players[y] = play_deck()
+# 
+#         for y in range(len(players)-1):
+#             playerchoice(y+1,players[y])
+# 
+#         dealerchoice()
+# 
+#         printHand("Dealer", players[4])
+# 
+#         for y in range(len(players)-1):
+#             scorecompare(y+1,players[y])
