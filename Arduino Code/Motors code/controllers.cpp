@@ -9,10 +9,9 @@ Controller::Controller(int firstPin) {
     pinMode(C_btnpin, INPUT_PULLUP);
     _sda = 20;
     _scl = 21;
-
 };
 
-char getPlayerInput(){
+char Controller::getPlayerInput(){
     bool finished = false;
     while (!finished){
         if(digitalRead(A_btnpin)){

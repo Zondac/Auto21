@@ -67,7 +67,10 @@ void setup()
     lcd[i].print("Chips:");
     lcd[i].setCursor(0, 1);
     lcd[i].noCursor();
-    setScore(lcd[i], 500);
+    lcd[i].print("                ");
+    lcd[i].setCursor(0, 1);
+    lcd[i].print(500);
+    lcd[i].setCursor(0, 1);
   }
 
   blackjackBegin();
@@ -85,36 +88,56 @@ void loop()
     case 'd':
       output = player1.getPlayerInput();
       break;
+    
     case 'e':
       output = player2.getPlayerInput();
       break;
+    
     case 'f':
       output = player3.getPlayerInput();
       break;
+    
     case 'g':
       output = player4.getPlayerInput();
       break;
+    
     case 'p':
       DcMotor();
       break;
+    
     case 'h':
       resetLocation();
       break;
+    
     case 's':
       resetLocation();
       blackjackBegin();
       break;
+    
     case 'i':
-      setScore(lcd[0], inputint);
+      lcd[0].print("                ");
+      lcd[0].setCursor(0, 1);
+      lcd[0].print(inputint);
+      lcd[0].setCursor(0, 1);
       break;
+    
     case 'j':
-      setScore(lcd[1], inputint);
+      lcd[1].print("                ");
+      lcd[1].setCursor(0, 1);
+      lcd[1].print(inputint);
+      lcd[1].setCursor(0, 1);
       break;
     case 'k':
-      setScore(lcd[2], inputint);
+      lcd[2].print("                ");
+      lcd[2].setCursor(0, 1);
+      lcd[2].print(inputint);
+      lcd[2].setCursor(0, 1);
       break;
     case 'l':
-      setScore(lcd[3], inputint);
+      lcd[3].print("                ");
+      lcd[3].setCursor(0, 1);
+      lcd[3].print(inputint);
+      lcd[3].setCursor(0, 1);
       break;
     default:
       break;
@@ -168,14 +191,6 @@ void initialDeal(int playeramount)
   }
 }
 
-void setScore(LiquidCrystal_I2C screen, int score)
-{
-  screen.print("                ");
-  screen.setCursor(0, 1);
-  screen.print(inputBuffer);
-  screen.setCursor(0, 1);
-}
-
 void resetLocation()
 {
   myStepper.step(-currentLocation);
@@ -188,6 +203,7 @@ void blackjackBegin()
     ;
   inputraw = Serial.readString();
   inputint = inputraw.toInt();
-  initialDeal(i + nputint1);
+  initialDeal(inputint + 1);
   Serial.read();
 }
+
