@@ -4,6 +4,7 @@
 #include <LiquidCrystal_I2C.h>
 
 int inputint;
+String inputraw;
 // Stepper settings
 // Defines the number of steps per rotation
 const int stepsPerRevolution = 1892; //473 steps for 10 v for 1/4 circle
@@ -55,8 +56,11 @@ void setup() {
   pinMode(in1, OUTPUT);
   pinMode(in2, OUTPUT);
 
-
-  for (int i = 0; i<4; i++)
+  for (size_t i = 0; i < 4; i++)
+  {
+  setScore(lcd[0], 500);
+  }
+  
   {
     lcd[i].begin(16,2);
     lcd[i].backlight();
@@ -71,16 +75,39 @@ void setup() {
 
 void loop()
 {
-
-  while (!Serial.available())
-  String inputraw = Serial.readString();
+  //Initial Deal
+  while (!Serial.available());
+  inputraw = Serial.readString();
+  inputint = inputraw.toInt();
   initialDeal(inputint+1);
   Serial.read();
-  Serial.print(player1.getPlayerInput());
 
-  myStepper.step(-currentLocation);
-  currentLocation = 0;
-}
+  //Players start choosing
+  while(!Serial.availble());
+  inputraw = Serial.readString();
+  inputint = inputraw.toInt();
+  char inputchar = inputraw.charAt(0);
+  switch (inputchar)
+  {
+  case 'd':
+    player1.getPlayerInput();
+    break;
+  case 'e':
+    player2.getPlayerInput();
+    break;
+  case 'f':
+    player3.getPlayerInput();
+    break;
+  case 'g':
+    player4.getPlayerInput();
+    break;
+  case 'h':
+  
+  default:
+    break;
+  }
+resetLocation()
+} 
 
 
 void  MoveToPlayer(int player) {
@@ -121,4 +148,15 @@ void initialDeal(int playeramount){
       DcMotor();
     }
   }
+}
+
+
+void setScore(LiquidCrystal_I2C screen, int score){
+    screen.print(score);
+    screen.setCursor(0,1);
+}
+
+void resetLocation(){
+  myStepper.step(-currentLocation);
+  currentLocation = 0;
 }
