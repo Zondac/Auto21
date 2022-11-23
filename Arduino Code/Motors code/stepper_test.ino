@@ -1,9 +1,9 @@
 #include <Stepper.h>
 #include <Wire.h>
-#include "controllers.h"
 #include <LiquidCrystal_I2C.h>
 
 int inputint;
+String inputintr;
 String inputraw;
 char output;
 bool readysignal;
@@ -16,16 +16,22 @@ int currentLocation = 0;
 
 int locationarray[5]{twentyPerRevolution, twentyPerRevolution * 3, twentyPerRevolution * 4, twentyPerRevolution * 5, twentyPerRevolution * 7};
 
-Controller player1(22);
-Controller player2(25);
-Controller player3(28);
-Controller player4(31);
+struct player{
+  int btna;
+  int btnb;
+  int btnc;
+};
+
+player player1 = {22, 23, 24};
+player player2 = {25, 26, 27};
+player player3 = {28, 29, 30};
+player player4 = {31, 32, 33};
 
 LiquidCrystal_I2C lcd[4] = {
-    LiquidCrystal_I2C(0x27, 16, 2),
-    LiquidCrystal_I2C(0x26, 16, 2),
-    LiquidCrystal_I2C(0x25, 16, 2),
-    LiquidCrystal_I2C(0x3F, 16, 2)};
+    LiquidCrystal_I2C(0x25, 16, 2),   //Black,  player 1
+    LiquidCrystal_I2C(0x27, 16, 2),   //Gray,   player 2   
+    LiquidCrystal_I2C(0x3F, 16, 2),   //Yellow, player 3
+    LiquidCrystal_I2C(0x26, 16, 2)};  //Red,    player 4
 
 // Stepper motor
 #define IN1 9
@@ -68,8 +74,22 @@ void setup()
   pinMode(c3s, INPUT);
   pinMode(c4s, INPUT);
 
+  pinMode(player1.btna, INPUT_PULLUP);
+  pinMode(player1.btnb, INPUT_PULLUP);
+  pinMode(player1.btnc, INPUT_PULLUP);
+  pinMode(player2.btna, INPUT_PULLUP);
+  pinMode(player2.btnb, INPUT_PULLUP);
+  pinMode(player2.btnc, INPUT_PULLUP);
+  pinMode(player3.btna, INPUT_PULLUP);
+  pinMode(player3.btnb, INPUT_PULLUP);
+  pinMode(player3.btnc, INPUT_PULLUP);
+  pinMode(player4.btna, INPUT_PULLUP);
+  pinMode(player4.btnb, INPUT_PULLUP);
+  pinMode(player4.btnc, INPUT_PULLUP);
+  
   for (size_t i = 0; i < 4; i++)
-  {
+  { 
+    lcd[i].init();
     lcd[i].begin(16, 2);
     lcd[i].backlight();
     lcd[i].clear();
@@ -79,36 +99,36 @@ void setup()
     lcd[i].noCursor();
     lcd[i].print("                ");
     lcd[i].setCursor(0, 1);
-    lcd[i].print(500);
+    lcd[i].print(2000000);
     lcd[i].setCursor(0, 1);
   }
-
-  blackjackBegin();
 }
 
 void loop()
 {
   while (Serial.available() > 0){
     inputraw = Serial.readString();
-    inputint = inputraw.toInt();
     inputchar = inputraw.charAt(0);
+    inputraw.remove(0,1);
+    inputint = inputraw.toInt();
+
 
     switch (inputchar)
     {
     case 'd':
-      output = player1.getPlayerInput();
+      output = getPlayerInput(&player1);
       break;
     
     case 'e':
-      output = player2.getPlayerInput();
+      output = getPlayerInput(&player2);
       break;
     
     case 'f':
-      output = player3.getPlayerInput();
+      output = getPlayerInput(&player3);
       break;
     
     case 'g':
-      output = player4.getPlayerInput();
+      output = getPlayerInput(&player4);
       break;
     
     case 'p':
@@ -153,14 +173,14 @@ void loop()
       break;
 
       case 'm':
-      Serial.write(playerAmount());
+      Serial.print(playerAmount());
       break;
       
     default:
       break;
     }
 
-    Serial.write(output);
+    Serial.print(output);
   }
 }
 
@@ -231,4 +251,20 @@ int playerAmount(){
   var -= digitalRead(c3s);
   var -= digitalRead(c4s);
   return var;
+}
+
+char getPlayerInput(player* reqplayer){
+  while (true){
+  if(!digitalRead(reqplayer->btna)){
+    return 'a';
+  }
+  else if (!digitalRead(reqplayer->btnb))
+  {
+    return 'b';
+  }
+  else if (!digitalRead(reqplayer->btnc)){
+    return 'c';
+  }
+  }
+
 }
