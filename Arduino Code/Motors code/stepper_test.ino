@@ -33,6 +33,12 @@ LiquidCrystal_I2C lcd[4] = {
 #define IN3 7
 #define IN4 6
 
+int c1s = 50;
+int c2s = 51;
+int c3s = 52;
+int c4s = 53;
+
+
 // DC motor
 int ena = 10;
 int in1 = 11;
@@ -48,7 +54,7 @@ int delaytime = 250;
 Stepper myStepper = Stepper(stepsPerRevolution, IN1, IN2);
 
 void setup()
-{
+{ 
   // python communication
   Serial.begin(115200);
   Serial.setTimeout(1);
@@ -57,6 +63,10 @@ void setup()
   pinMode(ena, OUTPUT);
   pinMode(in1, OUTPUT);
   pinMode(in2, OUTPUT);
+  pinMode(c1s, INPUT);
+  pinMode(c2s, INPUT);
+  pinMode(c3s, INPUT);
+  pinMode(c4s, INPUT);
 
   for (size_t i = 0; i < 4; i++)
   {
@@ -127,18 +137,25 @@ void loop()
       lcd[1].print(inputint);
       lcd[1].setCursor(0, 1);
       break;
+
     case 'k':
       lcd[2].print("                ");
       lcd[2].setCursor(0, 1);
       lcd[2].print(inputint);
       lcd[2].setCursor(0, 1);
       break;
+
     case 'l':
       lcd[3].print("                ");
       lcd[3].setCursor(0, 1);
       lcd[3].print(inputint);
       lcd[3].setCursor(0, 1);
       break;
+
+      case 'm':
+      Serial.write(playerAmount());
+      break;
+      
     default:
       break;
     }
@@ -203,7 +220,15 @@ void blackjackBegin()
     ;
   inputraw = Serial.readString();
   inputint = inputraw.toInt();
-  initialDeal(inputint + 1);
+  initialDeal(playerAmount()+1);
   Serial.read();
 }
 
+int playerAmount(){
+  int var = 4;
+  var -= digitalRead(c1s);
+  var -= digitalRead(c2s);
+  var -= digitalRead(c3s);
+  var -= digitalRead(c4s);
+  return var;
+}
