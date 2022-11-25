@@ -1,6 +1,9 @@
-import random
 import drawCard
 from drawCard import drawCard
+import comTest
+from comTest import read
+import time
+
 
 def handVal(player_hand):
     player_hand.sort()
@@ -32,40 +35,46 @@ def playerchoice(playerID, playerhand, drawCardCount, deck, MaskImgList):
 
         if (finished == False):
             print(handVal(playerhand))
-            playerInput = input("Player " + playerID + " input: " )
+            playerInput = comTest.wr(playerID) # Function to send serial data to arduino
+           ### playerInput = GetInpuT() # Function to get output back from arduino
+            
+           
 
             if playerInput == 'a':
-                print("Hit")
-                cardValue, drawCardCount = drawCard(drawCardCount, deck, MaskImgList)
-                playerhand.append(cardValue)
-                #spytt ut kort : send piss til serial
+               
+               print("Hit")
+               cardValue, drawCardCount = drawCard(drawCardCount, deck, MaskImgList)
+               playerhand.append(cardValue)
+               #Send serial to arduino to dispense card
+               
 
-                if (handVal(playerhand) == 0):
-                    #Update score
-                    print(playerID, " Busted")
-                    finished = True
+               if (handVal(playerhand) == 0):
+                   #Update score
+                   print(playerID, " Busted")
+                   finished = True
                     
-                elif(handVal(playerhand) == 21):
-                    finished = True
+               elif(handVal(playerhand) == 21):
+                   finished = True
 
             elif playerInput == "b":
-                #Enter bet
-                print(playerID, " Double down")
-                cardValue, drawCardCount = drawCard(drawCardCount, deck, MaskImgList)
-                playerhand.append(cardValue)
-                #Spytt ut kort
-                finished = True
+               #Enter bet
+               print(playerID, " Double down")
+               cardValue, drawCardCount = drawCard(drawCardCount, deck, MaskImgList)
+               playerhand.append(cardValue)
+               #Spytt ut kort
+               finished = True
+               
                 
-                if (handVal(playerhand) == 0):
-                    #Update score
-                    print("Busted")
-                    finished = True
-                elif (handVal(playerhand) == 21):
-                    finished = True
+               if (handVal(playerhand) == 0):
+                   #Update score
+                   print("Busted")
+                   finished = True
+               elif (handVal(playerhand) == 21):
+                   finished = True
 
             elif playerInput == "c":
-                print("Stand")
-                finished = True
+               print("Stand")
+               finished = True
     return drawCardCount
         
 
@@ -73,14 +82,16 @@ def playerchoice(playerID, playerhand, drawCardCount, deck, MaskImgList):
 def dealerchoice(dealerhand, drawCardCount, deck, MaskImgList):
     if (handVal(dealerhand) == 0):
         print("Dealer busted!")
+        drawCardCount = drawCardCount
         return drawCardCount
 
     elif(handVal(dealerhand) < 16):
         print("Hit - Dealer")
-        cardvalue, drawCardCount = drawCard(drawCardCount, deck, MaskImgList)
+        cardValue, drawCardCount = drawCard(drawCardCount, deck, MaskImgList)
         dealerhand.append(cardValue)
         #Spytt ut kort
-        dealerchoice()
+        drawCardCount = dealerchoice(dealerhand, drawCardCount, deck, MaskImgList)
+        return drawCardCount
         
     else:
         print("Dealer stand")
@@ -88,13 +99,22 @@ def dealerchoice(dealerhand, drawCardCount, deck, MaskImgList):
         return drawCardCount
 
 
-def scorecompare(playerID, playerHand, dealerhand):
+def scorecompare(playerID, playerHand, dealerhand, playerscores):
     if(handVal(playerHand) > handVal(dealerhand)):
         print("Player ",playerID , "has a score of ", handVal(playerHand)," and beat the dealer")
+        time.sleep(0.5)
+        comTest.write(chr(ord(playerID)+5)+str(playerscores+500))
+        if(handVal(playerHand) == 21):
+            time.sleep(0.5)
+            comTest.write(chr(ord(playerID)+5)+str(playerscores+250))
     elif (handVal(playerHand) == handVal(dealerhand)):
         print("Player ",playerID ," drew")
+        time.sleep(0.5)
+        comTest.write(chr(ord(playerID)+5)+str(playerscores))
     else:
         print("Dealer beat player ", playerID)
+        time.sleep(0.5)
+        comTest.write(chr(ord(playerID)+5)+str(playerscores-500))
 
 
 
