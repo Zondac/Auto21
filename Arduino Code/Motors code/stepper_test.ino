@@ -23,15 +23,16 @@ int currentLocation = 0;
 int locationarray[5]{twentyPerRevolution, twentyPerRevolution * 3, twentyPerRevolution * 4, twentyPerRevolution * 5, twentyPerRevolution * 7};
 
 struct player{
+  int chips;
   int btna;
   int btnb;
   int btnc;
 };
 
-player player1 = {22, 23, 24};
-player player2 = {25, 26, 27};
-player player3 = {28, 29, 30};
-player player4 = {31, 32, 33};
+player player1 = {20000, 22, 23, 24};
+player player2 = {20000, 25, 26, 27};
+player player3 = {20000, 28, 29, 30};
+player player4 = {20000, 31, 32, 33};
 
 LiquidCrystal_I2C lcd[4] = {
     LiquidCrystal_I2C(0x25, 16, 2),   //Black,  player 1
@@ -98,15 +99,7 @@ void setup()
     lcd[i].init();
     lcd[i].begin(16, 2);
     lcd[i].backlight();
-    lcd[i].clear();
-    lcd[i].setCursor(0, 0);
-    lcd[i].print("Chips:");
-    lcd[i].setCursor(0, 1);
-    lcd[i].noCursor();
-    lcd[i].print("                ");
-    lcd[i].setCursor(0, 1);
-    lcd[i].print(200000);
-    lcd[i].setCursor(0, 1);
+    setChips(lcd[i], 20000);
   }
   Serial.println('r');
 }
@@ -123,23 +116,31 @@ void loop()
     switch (inputchar)
     {
     case 'd':
+      screenWrite(lcd[0], "Hit    DD  Stand", " A     B     C");
       output = getPlayerInput(&player1);
       delay(300);
+      setChips(lcd[0], player1.chips);
       break;
     
     case 'e':
+      screenWrite(lcd[1], "Hit    DD  Stand", " A     B     C");
       output = getPlayerInput(&player2);
       delay(300);
+      setChips(lcd[1], player2.chips);
       break;
     
     case 'f':
+      screenWrite(lcd[2], "Hit    DD  Stand", " A     B     C");
       output = getPlayerInput(&player3);
       delay(300);
+      setChips(lcd[2], player3.chips);
       break;
     
     case 'g':
+      screenWrite(lcd[3], "Hit    DD  Stand", " A     B     C");
       output = getPlayerInput(&player4);
       delay(300);
+      setChips(lcd[3], player4.chips);
       break;
     
     case 'p':
@@ -160,31 +161,23 @@ void loop()
       break;
     
     case 'i':
-      lcd[0].print("                ");
-      lcd[0].setCursor(0, 1);
-      lcd[0].print(inputint);
-      lcd[0].setCursor(0, 1);
+      setChips(lcd[0], inputint);
+      player1.chips = inputint;
       break;
     
     case 'j':
-      lcd[1].print("                ");
-      lcd[1].setCursor(0, 1);
-      lcd[1].print(inputint);
-      lcd[1].setCursor(0, 1);
+      setChips(lcd[1], inputint);
+      player2.chips = inputint;
       break;
 
     case 'k':
-      lcd[2].print("                ");
-      lcd[2].setCursor(0, 1);
-      lcd[2].print(inputint);
-      lcd[2].setCursor(0, 1);
+      setChips(lcd[2], inputint);
+      player3.chips = inputint;
       break;
 
     case 'l':
-      lcd[3].print("                ");
-      lcd[3].setCursor(0, 1);
-      lcd[3].print(inputint);
-      lcd[3].setCursor(0, 1);
+      setChips(lcd[3], inputint);
+      player4.chips = inputint;
       break;
 
     case 'x':
@@ -215,15 +208,7 @@ void loop()
 
         case 'b':
           doneselecting = true;
-          lcd[0].clear();
-          lcd[0].setCursor(0, 0);
-          lcd[0].print("Chips:");
-          lcd[0].setCursor(0, 1);
-          lcd[0].noCursor();
-          lcd[0].print("                ");
-          lcd[0].setCursor(0, 1);
-          lcd[0].print(200000);
-          lcd[0].setCursor(0, 1);
+          setChips(lcd[0], player1.chips);
           break;
         
         case 'c':
@@ -342,4 +327,26 @@ char getPlayerInput(player* reqplayer){
   }
   }
 
+}
+
+void setChips(LiquidCrystal_I2C screen,int x){
+    screen.clear();
+    screen.setCursor(0, 0);
+    screen.print("Chips:");
+    screen.setCursor(0, 1);
+    screen.noCursor();
+    screen.print("                ");
+    screen.setCursor(0, 1);
+    screen.print(x);
+    screen.setCursor(0, 1);
+}
+
+void screenWrite(LiquidCrystal_I2C screen, String row1, String row2){
+    screen.setCursor(0, 0);
+    screen.print(row1);
+    screen.setCursor(0, 1);
+    screen.noCursor();;
+    screen.setCursor(0, 1);
+    screen.print(row2);
+    screen.setCursor(0, 1);
 }
