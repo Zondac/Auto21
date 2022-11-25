@@ -12,6 +12,7 @@ int currentplayer = 0;
 int players = 1;
 char selectionchar;
 bool doneselecting = false;
+bool doneselecting2 = false;
 
 // Stepper settings
 // Defines the number of steps per rotation
@@ -20,25 +21,27 @@ const int twentyPerRevolution = 480;
 
 int currentLocation = 0;
 
-int locationarray[5]{twentyPerRevolution, twentyPerRevolution * 3, twentyPerRevolution * 4, twentyPerRevolution * 5, twentyPerRevolution * 7};
+int locationarray[5]{twentyPerRevolution*7, twentyPerRevolution * 5, twentyPerRevolution * 4, twentyPerRevolution * 3, twentyPerRevolution};
 
 struct player{
+  char ID;
   int chips;
   int btna;
   int btnb;
   int btnc;
+  LiquidCrystal_I2C playerscreen;
 };
-
-player player1 = {20000, 22, 23, 24};
-player player2 = {20000, 25, 26, 27};
-player player3 = {20000, 28, 29, 30};
-player player4 = {20000, 31, 32, 33};
 
 LiquidCrystal_I2C lcd[4] = {
     LiquidCrystal_I2C(0x25, 16, 2),   //Black,  player 1
     LiquidCrystal_I2C(0x27, 16, 2),   //Gray,   player 2   
     LiquidCrystal_I2C(0x3F, 16, 2),   //Yellow, player 3
     LiquidCrystal_I2C(0x26, 16, 2)};  //Red,    player 4
+
+player player1 = {'1' ,20000, 22, 23, 24, lcd[0]};
+player player2 = {'2' ,20000, 25, 26, 27, lcd[1]};
+player player3 = {'3' ,20000, 28, 29, 30, lcd[2]};
+player player4 = {'4' ,20000, 31, 32, 33, lcd[3]};
 
 // Stepper motor
 #define IN1 9
@@ -59,8 +62,8 @@ int in2 = 12;
 
 // Numeric variables
 int speed1 = 15;
-int speed2 = 30;
-int delaytime = 250;
+int speed2 = 35;
+int delaytime = 200;
 
 // Creates an instance of stepper class
 // Pins entered in sequence IN1-IN2 for proper step sequence
@@ -97,15 +100,58 @@ void setup()
   for (size_t i = 0; i < 4; i++)
   { 
     lcd[i].init();
-    lcd[i].begin(16, 2);
-    lcd[i].backlight();
+    lcd[i].noCursor();
     setChips(lcd[i], 20000);
   }
   Serial.println('r');
 }
-
+char playerID = 0;
+bool screenwritten = false;
 void loop()
 {
+  
+  if(inputchar == 'd' ||inputchar == 'e' ||inputchar == 'f' ||inputchar == 'g'){
+    playerID = inputchar;
+    screenwritten = false;
+    inputchar = 0;
+  }
+  
+  if (playerID == 'd'){
+    if (!screenwritten)
+    {
+      screenWrite(player1.playerscreen, "Hit    DD  Stand", " A     B     C  ");
+      screenwritten = true;
+    }
+
+    sendPlayerInput(player1); 
+    }
+
+  if (playerID == 'e'){
+    if (!screenwritten)
+    {
+      screenWrite(player2.playerscreen, "Hit    DD  Stand", " A     B     C  ");
+      screenwritten = true;
+    }
+    sendPlayerInput(player2); 
+    }
+
+  if (playerID == 'f'){
+    if (!screenwritten)
+    {
+      screenWrite(player3.playerscreen, "Hit    DD  Stand", " A     B     C  ");
+      screenwritten = true;
+    }
+    sendPlayerInput(player3); 
+    }
+  if (playerID == 'g'){
+    if (!screenwritten)
+    {
+      screenWrite(player4.playerscreen, "Hit    DD  Stand", " A      B    C  ");
+      screenwritten = true;
+    }
+    sendPlayerInput(player4); 
+    }
+
   while (Serial.available() > 0){
     inputraw = Serial.readString();
     inputchar = inputraw.charAt(0);
@@ -115,78 +161,65 @@ void loop()
 
     switch (inputchar)
     {
-    case 'd':
-      screenWrite(lcd[0], "Hit    DD  Stand", " A     B     C");
-      output = getPlayerInput(&player1);
-      delay(300);
-      setChips(lcd[0], player1.chips);
-      break;
-    
-    case 'e':
-      screenWrite(lcd[1], "Hit    DD  Stand", " A     B     C");
-      output = getPlayerInput(&player2);
-      delay(300);
-      setChips(lcd[1], player2.chips);
-      break;
-    
-    case 'f':
-      screenWrite(lcd[2], "Hit    DD  Stand", " A     B     C");
-      output = getPlayerInput(&player3);
-      delay(300);
-      setChips(lcd[2], player3.chips);
-      break;
-    
-    case 'g':
-      screenWrite(lcd[3], "Hit    DD  Stand", " A     B     C");
-      output = getPlayerInput(&player4);
-      delay(300);
-      setChips(lcd[3], player4.chips);
-      break;
-    
     case 'p':
       DcMotor();
       break;
     
-    case 'h':
-      resetLocation();
-      break;
-    
     case 'm':
       MoveToPlayer(inputint);
-      Serial.println('f');
+      Serial.println('v');
       break;
     case 's':
       resetLocation();
-      blackjackBegin();
+      Serial.println('v');
       break;
     
     case 'i':
       setChips(lcd[0], inputint);
       player1.chips = inputint;
+      Serial.println('v');
       break;
     
     case 'j':
       setChips(lcd[1], inputint);
       player2.chips = inputint;
+      Serial.println('v');
       break;
 
     case 'k':
       setChips(lcd[2], inputint);
       player3.chips = inputint;
+      Serial.println('v');
       break;
 
     case 'l':
       setChips(lcd[3], inputint);
       player4.chips = inputint;
+      Serial.println('v');
+      break;
+
+    case 'q':
+
+      resetLocation();
+      doneselecting2 = false;
+      screenWrite(player1.playerscreen, "Another round?  ", "Yes           No");
+      while(!doneselecting2){
+      output = getPlayerInput(&player1);
+      if (output != 'b') doneselecting2 = true;
+      }
+      setChips(lcd[0], player1.chips);
       break;
 
     case 'x':
 
       doneselecting = false;
+      //delay(5000);
+      lcd[0].setCursor(0,1);
+      lcd[0].setBacklight(true);
+      lcd[0].printstr("                ");
       while(!doneselecting){
-        lcd[0].clear();
         lcd[0].setCursor(0,0);
-        lcd[0].print("Select players:");
+        lcd[0].printstr("Select players: ");
         lcd[0].setCursor(0,1);
         lcd[0].print(players);
         selectionchar = getPlayerInput(&player1);
@@ -237,14 +270,15 @@ void loop()
     default:
       break;
     }
-
     Serial.println(output);
+    output = 0;
   }
 }
 
+
 void MoveToPlayer(int player)
 {
-  myStepper.setSpeed(speed1);
+  myStepper.setSpeed(speed2);
   myStepper.step(locationarray[player] - currentLocation);
   currentLocation = locationarray[player];
 }
@@ -313,8 +347,29 @@ int playerAmount(){
   return var;
 }
 
+void sendPlayerInput(player reqplayer){
+  
+  if(!digitalRead(reqplayer.btna)){
+    Serial.println('a');
+    setChips(reqplayer.playerscreen, reqplayer.chips);
+    playerID = 0;
+  }
+  else if (!digitalRead(reqplayer.btnb))
+  {
+    Serial.println('b');
+    setChips(reqplayer.playerscreen, reqplayer.chips);
+    playerID = 0;
+  }
+  else if (!digitalRead(reqplayer.btnc)){
+    Serial.println('c');
+    setChips(reqplayer.playerscreen, reqplayer.chips);
+    playerID = 0;
+  }
+  
+}
+
 char getPlayerInput(player* reqplayer){
-  while (true){
+  while(true){
   if(!digitalRead(reqplayer->btna)){
     return 'a';
   }
@@ -326,27 +381,24 @@ char getPlayerInput(player* reqplayer){
     return 'c';
   }
   }
-
+  
 }
 
 void setChips(LiquidCrystal_I2C screen,int x){
-    screen.clear();
+    screen.begin(16,2);
     screen.setCursor(0, 0);
-    screen.print("Chips:");
-    screen.setCursor(0, 1);
-    screen.noCursor();
-    screen.print("                ");
+    screen.backlight();
+    screen.print("Chips:          ");
     screen.setCursor(0, 1);
     screen.print(x);
-    screen.setCursor(0, 1);
+
 }
 
 void screenWrite(LiquidCrystal_I2C screen, String row1, String row2){
-    screen.setCursor(0, 0);
+    screen.begin(16,2);
+    screen.setCursor(0, 0);    
+    screen.backlight();
     screen.print(row1);
     screen.setCursor(0, 1);
-    screen.noCursor();;
-    screen.setCursor(0, 1);
     screen.print(row2);
-    screen.setCursor(0, 1);
 }
