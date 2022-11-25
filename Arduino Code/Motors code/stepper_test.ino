@@ -8,10 +8,16 @@ String inputraw;
 char output;
 bool readysignal;
 char inputchar;
+int currentplayer = 0;
+int players = 1;
+char selectionchar;
+bool doneselecting = false;
+
 // Stepper settings
 // Defines the number of steps per rotation
 const int stepsPerRevolution = 1892; // 473 steps for 10 v for 1/4 circle
 const int twentyPerRevolution = 480;
+
 int currentLocation = 0;
 
 int locationarray[5]{twentyPerRevolution, twentyPerRevolution * 3, twentyPerRevolution * 4, twentyPerRevolution * 5, twentyPerRevolution * 7};
@@ -99,9 +105,10 @@ void setup()
     lcd[i].noCursor();
     lcd[i].print("                ");
     lcd[i].setCursor(0, 1);
-    lcd[i].print(2000000);
+    lcd[i].print(200000);
     lcd[i].setCursor(0, 1);
   }
+  Serial.println('r');
 }
 
 void loop()
@@ -117,18 +124,22 @@ void loop()
     {
     case 'd':
       output = getPlayerInput(&player1);
+      delay(300);
       break;
     
     case 'e':
       output = getPlayerInput(&player2);
+      delay(300);
       break;
     
     case 'f':
       output = getPlayerInput(&player3);
+      delay(300);
       break;
     
     case 'g':
       output = getPlayerInput(&player4);
+      delay(300);
       break;
     
     case 'p':
@@ -139,6 +150,10 @@ void loop()
       resetLocation();
       break;
     
+    case 'm':
+      MoveToPlayer(inputint);
+      Serial.println('f');
+      break;
     case 's':
       resetLocation();
       blackjackBegin();
@@ -172,23 +187,81 @@ void loop()
       lcd[3].setCursor(0, 1);
       break;
 
-      case 'm':
-      Serial.print(playerAmount());
+    case 'x':
+
+      doneselecting = false;
+      while(!doneselecting){
+        lcd[0].clear();
+        lcd[0].setCursor(0,0);
+        lcd[0].print("Select players:");
+        lcd[0].setCursor(0,1);
+        lcd[0].print(players);
+        selectionchar = getPlayerInput(&player1);
+        switch (selectionchar)
+        {
+        case 'a':
+          if(players == 1){
+            players = 4;
+          }
+          else{
+            players--;
+          }
+          lcd[0].setCursor(0,1);
+          lcd[0].print(players);
+          lcd[0].setCursor(0,1);
+          delay(300);
+          
+          break;
+
+        case 'b':
+          doneselecting = true;
+          lcd[0].clear();
+          lcd[0].setCursor(0, 0);
+          lcd[0].print("Chips:");
+          lcd[0].setCursor(0, 1);
+          lcd[0].noCursor();
+          lcd[0].print("                ");
+          lcd[0].setCursor(0, 1);
+          lcd[0].print(200000);
+          lcd[0].setCursor(0, 1);
+          break;
+        
+        case 'c':
+
+          if(players == 4){
+            players = 1;
+          }
+          else{
+            players++;
+          }
+          lcd[0].setCursor(0,1);
+          lcd[0].print(players);
+          lcd[0].setCursor(0,1);
+          delay(300);
+          break;
+
+        default:
+          break;
+        }
+
+      }
+
+      Serial.println(players);
       break;
-      
+
     default:
       break;
     }
 
-    Serial.print(output);
+    Serial.println(output);
   }
 }
 
 void MoveToPlayer(int player)
 {
   myStepper.setSpeed(speed1);
-  myStepper.step(locationarray[player - 1] - currentLocation);
-  currentLocation = locationarray[player - 1];
+  myStepper.step(locationarray[player] - currentLocation);
+  currentLocation = locationarray[player];
 }
 
 void DcMotor()
@@ -210,6 +283,7 @@ void DcMotor()
   digitalWrite(in1, LOW);
   digitalWrite(in2, LOW);
   delay(50);
+  Serial.println("Card dealt");
 }
 
 void initialDeal(int playeramount)
@@ -220,10 +294,10 @@ void initialDeal(int playeramount)
     for (size_t i = 1; i <= playeramount; i++)
     {
       MoveToPlayer(i);
-      while (!Serial.available())
-        ;
+      while (!Serial.available()){};
       Serial.read();
       DcMotor();
+      currentplayer = i;
     }
   }
 }
@@ -236,12 +310,13 @@ void resetLocation()
 
 void blackjackBegin()
 {
-  while (!Serial.available())
-    ;
+  Serial.read();
+  while (!Serial.available()){};
   inputraw = Serial.readString();
   inputint = inputraw.toInt();
-  initialDeal(playerAmount()+1);
+  initialDeal(players+1);
   Serial.read();
+  Serial.println('r');
 }
 
 int playerAmount(){
