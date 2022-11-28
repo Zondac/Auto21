@@ -18,3 +18,4 @@ def CapImg(resolution=(1280,960)):
     img = RawFeed.array
     # return image
     return img
+

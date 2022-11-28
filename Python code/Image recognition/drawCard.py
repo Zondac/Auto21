@@ -2,10 +2,10 @@ import cv2
 import numpy as np
 from CapPic import CapImg
 from scipy.spatial import distance
+import comTest
 import os
 
 def drawCard(drawCardCount, nameList, maskImgList):
-    
     if drawCardCount < 15:
         imageCenter = (2100,1000)
     elif drawCardCount  < 30:
@@ -28,12 +28,13 @@ def drawCard(drawCardCount, nameList, maskImgList):
     img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
     img = cv2.cvtColor(img, cv2.COLOR_GRAY2BGR)
 
+
     # Turns picture to HSV color code.
     hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
 
     # lower bound and upper bound for black color
     lower_black = np.array([0, 0, 0])
-    upper_black = np.array([180, 255, 130])
+    upper_black = np.array([180, 255, 95]) #130
     # Apply mask to image, black color turn white, else all black.
     mask = cv2.inRange(hsv, lower_black, upper_black)
 
@@ -95,6 +96,8 @@ def drawCard(drawCardCount, nameList, maskImgList):
             bestRankDiff = rankDiff
             bestRankName = nameList[index]
         index+= 1
-    cv2.destroyAllWindows()
     drawCardCount += 1
-    return bestRankName, drawCardCount
+    comTest.write('p')
+    print(bestRankName)
+    return int(bestRankName), drawCardCount
+
