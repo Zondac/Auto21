@@ -60,7 +60,7 @@ while gameOn:
 
     players = [player1hand, player2hand, player3hand, player4hand, player5hand]
 
-
+# Initial deal at start of the round
     for i in range(0, 2):
         for j in range(0, numberOfPlayers + 1):
             
@@ -70,13 +70,13 @@ while gameOn:
             cardValue, drawCardCount = drawCard(drawCardCount, deck, maskImgList)
             players[j].append(cardValue)
             print(comTest.read())
-            #send to serial to dispense card
-            #sleep until card disp right position
+
 
     write('m'+ str(0))
     while(read() != "v"):
         time.sleep(0.01)
         
+  # Main game loop
     for i in range(numberOfPlayers):
 
         drawCardCount = playerchoice(playerID[i], players[i], drawCardCount, deck, maskImgList)
