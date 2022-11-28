@@ -51,8 +51,8 @@ def drawCard(drawCardCount, nameList, maskImgList):
     turn = 0
 
     for i in contours:
-        # moment function does some math that gives the average "weight" of an image, related to shape and intensity of image,
-        #used alot in image prossesing and is needed here to find center of contour
+        # moment function does some math that gives the average "weight" of an image, finding the center of mass of the contour shape,
+        #used alot in image prossesing and is needed here to find center of the contour
         moment = cv2.moments(i)
         ix = int(moment["m10"] / moment["m00"])
         iy = int(moment["m01"] / moment["m00"])
@@ -74,7 +74,7 @@ def drawCard(drawCardCount, nameList, maskImgList):
     output = cv2.drawContours(img, contours[nr], -1, (0, 0, 255), 3)
 
     
-    # finds square around contour, adding to w to to find a larger square.
+    # finds square around contour, adding more to w to to draw a larger square which will allow a 10 rank card to fit.
 
     x, y, w, h = cv2.boundingRect(contours[nr])
     test = 1.6
@@ -85,7 +85,7 @@ def drawCard(drawCardCount, nameList, maskImgList):
 
     bestRankDiff = 9999999
     index = 0
-
+    #Compares picture and sample pictures saved in a folder inluding all ranks to find the best fitting rank. 
     for item in maskImgList:
         item = cv2.resize(item,(300,500))
         diffImg = cv2.absdiff(cropped, item)
